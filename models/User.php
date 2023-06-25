@@ -125,4 +125,9 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         $this->password = md5($this->password);
         return true;
     }
+
+    public function isAdmin()
+    {
+        return $this->role === 1;
+    }
 }

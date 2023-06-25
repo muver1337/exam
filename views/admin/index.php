@@ -9,16 +9,12 @@ use yii\grid\GridView;
 /** @var yii\web\View $this */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Личный кабинет';
+$this->title = 'Личный кабинет Админа';
 
 ?>
 <div class="user-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Добавить заявку', ['/answer/create'], ['class' => 'btn btn-success']) ?>
-    </p>
 
 
     <?= GridView::widget([
