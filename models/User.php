@@ -21,6 +21,8 @@ use yii\web\IdentityInterface;
  */
 class User extends \yii\db\ActiveRecord implements IdentityInterface
 {
+    public $password2;
+
     public static function findIdentity($id)
     {
         return static::findOne($id);
@@ -57,7 +59,10 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['email', 'name', 'surname', 'password'], 'required'],
+            [['email', 'name', 'surname', 'password', 'password2'], 'required'],
+            ['email', 'email'],
+            ['name', 'validateName'],
+            ['password2', 'compare', 'compareAttribute' => 'password'],
             [['active', 'role'], 'integer'],
             [['email', 'name', 'surname', 'password'], 'string', 'max' => 255],
             [['email'], 'unique'],
@@ -75,6 +80,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             'name' => 'Name',
             'surname' => 'Surname',
             'password' => 'Password',
+            'password2' => 'Повторите пароль',
             'active' => 'Active',
             'role' => 'Role',
         ];
@@ -97,11 +103,26 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
 
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return $this->password === md5($password);
     }
 
     static public function findByUsername($email)
     {
         return self::find()->where(['email'=>$email])->one();
+    }
+
+    public function validateName($attr)
+    {
+        $user = self::find()->where(['name'=>$this ->name])->one();
+
+        if ($user !== null){
+            $this->addError($attr, 'Имя занято');
+        }
+    }
+
+    public function beforeSave($insert)
+    {
+        $this->password = md5($this->password);
+        return true;
     }
 }
